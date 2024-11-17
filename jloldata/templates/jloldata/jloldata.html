@@ -30,7 +30,7 @@
             font-size: 1.2em;
         }
 
-        select, input[type="text"] {
+        select, input[type="text"], input[type="date"] {
             padding: 10px;
             font-size: 1em;
             margin: 10px;
@@ -38,7 +38,7 @@
             border: 1px solid #ccc;
         }
 
-        input[type="submit"] {
+        input[type="submit"], button {
             padding: 10px 20px;
             background-color: #3498db;
             color: white;
@@ -47,12 +47,12 @@
             cursor: pointer;
         }
 
-        input[type="submit"]:hover {
+        input[type="submit"]:hover, button:hover {
             background-color: #2980b9;
         }
 
         table {
-            width: 80%;
+            width: 100%;
             margin: 30px auto;
             border-collapse: collapse;
             background-color: white;
@@ -82,34 +82,83 @@
             width: 5%;
         }
 
-        /* Pagination Box */
-        .pagination-box {
-            display: flex;
-            justify-content: center;
+        /* Pagination */
+        .pagination {
+            text-align: center;
             margin-top: 20px;
-            flex-wrap: wrap;
         }
 
-        .pagination-box a {
-            display: block;
+        .pagination a {
             padding: 10px 15px;
-            margin: 5px;
+            margin: 0 5px;
             background-color: #3498db;
             color: white;
-            text-decoration: none;
             border-radius: 5px;
-            text-align: center;
+            text-decoration: none;
         }
 
-        .pagination-box a:hover {
+        .pagination a:hover {
             background-color: #2980b9;
         }
 
-        .pagination-box .current-page {
-            background-color: #2980b9;
-            pointer-events: none;
+        .pagination .current {
+            padding: 10px 15px;
+            margin: 0 5px;
+            background-color: #e1e1e1;
+            color: #333;
+            border-radius: 5px;
         }
 
+        .pagination .disabled {
+            color: #ccc;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            table {
+                width: 100%;
+                font-size: 14px;
+            }
+
+            label {
+                font-size: 1em;
+            }
+
+            input[type="text"], input[type="date"], select {
+                width: 90%;
+                font-size: 1em;
+                margin: 5px;
+            }
+
+            input[type="submit"], button {
+                width: 90%;
+                padding: 12px;
+            }
+
+            h1 {
+                font-size: 24px;
+                padding: 15px;
+            }
+
+            form {
+                margin: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 20px;
+                padding: 10px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            input[type="submit"], button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -139,6 +188,18 @@
         <input type="submit" value="Filter">
     </form>
 
+    <h2>Update OL Date</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="dt_ct_name">Enter DC/CT Name:</label>
+        <input type="text" name="dt_ct_name" id="dt_ct_name" placeholder="Enter DC/CT Name" required>
+
+        <label for="ol_date">Enter OL Date:</label>
+        <input type="date" name="ol_date" id="ol_date" required>
+
+        <button type="submit">Save OL Date</button>
+    </form>
+
     <table>
         <thead>
             <tr>
@@ -147,20 +208,42 @@
                 <th>Username</th>
                 <th>Role</th>
                 <th>Joining</th>
+                <th>OL Date</th>
             </tr>
         </thead>
         <tbody>
-            {% for entry in data %}
+            {% for entry in page_obj.object_list %}
             <tr>
-                <td>{{ forloop.counter }}</td>
+                <td>{{ forloop.counter0|add:page_obj.start_index }}</td> <!-- Ensures sno remains consistent -->
                 <td>{{ entry.dt_ct_name }}</td>
                 <td>{{ entry.username }}</td>
                 <td>{{ entry.role }}</td>
                 <td>{{ entry.joining }}</td>
+                <td>{{ entry.ol_date }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
+    <!-- Pagination Controls -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1&search={{ request.GET.search }}&role={{ request.GET.role }}&joining={{ request.GET.joining }}">First</a>
+                <a href="?page={{ page_obj.previous_page_number }}&search={{ request.GET.search }}&role={{ request.GET.role }}&joining={{ request.GET.joining }}">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}&search={{ request.GET.search }}&role={{ request.GET.role }}&joining={{ request.GET.joining }}">Next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}&search={{ request.GET.search }}&role={{ request.GET.role }}&joining={{ request.GET.joining }}">Last</a>
+            {% endif %}
+        </span>
+    </div>
+
 </body>
 </html>
+
