@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCS Joining Check - Unofficial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+
+        form {
+            text-align: center;
+            margin: 20px;
+        }
+
+        label {
+            margin: 10px;
+            font-size: 1.2em;
+        }
+
+        select, input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            margin: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+
+        table {
+            width: 80%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e1e1e1;
+        }
+
+        .sno {
+            width: 5%;
+        }
+
+        /* Pagination Box */
+        .pagination-box {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-box a {
+            display: block;
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .pagination-box a:hover {
+            background-color: #2980b9;
+        }
+
+        .pagination-box .current-page {
+            background-color: #2980b9;
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>TCS Joining Check - Unofficial</h1>
+
+    <form method="get">
+        <label for="search">Search by Username:</label>
+        <input type="text" name="search" id="search" value="{{ request.GET.search }}">
+
+        <label for="role">Role:</label>
+        <select name="role" id="role">
+            <option value="">All</option>
+            {% for role in role_options %}
+                <option value="{{ role }}" {% if request.GET.role == role %}selected{% endif %}>{{ role }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="joining">Joining:</label>
+        <select name="joining" id="joining">
+            <option value="">All</option>
+            {% for joining in joining_options %}
+                <option value="{{ joining }}" {% if request.GET.joining == joining %}selected{% endif %}>{{ joining }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="submit" value="Filter">
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="sno">S.No</th>
+                <th>DT/CT Name</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Joining</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in data %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ entry.dt_ct_name }}</td>
+                <td>{{ entry.username }}</td>
+                <td>{{ entry.role }}</td>
+                <td>{{ entry.joining }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
